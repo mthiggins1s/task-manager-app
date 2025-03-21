@@ -1,34 +1,38 @@
 // task-list.component.ts
-import { Component, signal } from '@angular/core';
-import { TaskComponent } from "../task/task.component";
+import { Component, Signal, signal } from '@angular/core';
+import { TaskComponent } from '../task/task.component';
+
+interface Task {
+  id: number;
+  title: string | undefined;
+  completed: boolean;
+}
 
 @Component({
   selector: 'app-task-list',
   templateUrl: './task-list.component.html',
+  imports: [TaskComponent],
   styleUrls: ['./task-list.component.css'],
-  imports: [TaskComponent]
 })
 export class TaskListComponent {
-  tasks = [
-    { title: 'Task 1', completed: false },
-    { title: 'Task 2', completed: true },
-    { title: 'Task 3', completed: false },
-  ];
+  tasks = signal<Task[]>([
+    { id: 1, title: 'Fix the bug!', completed: false },
+    { id: 2, title: 'Understand Signals', completed: true },
+    { id: 3, title: undefined, completed: false },
+  ]);
 
-  
-  filter = 'All';
+  toggleCompletion(taskId: number) {
+    const updatedTasks = this.tasks().map((task) => {
+      if (task.id === taskId) {
+        task.completed = !task.completed;
+      }
+      return task;
+    });
 
-  get filteredTasks() {
-    if (this.filter === 'Completed') {
-      return this.tasks.filter(task => task.completed);
-    }
-    if (this.filter === 'Pending') {
-      return this.tasks.filter(task => !task.completed);
-    }
-    return this.tasks;
+    // Update the signal here
+    this.tasks.set(updatedTasks);
   }
-
-  changeFilter(status: string) {
-    status = this.filter;
+  changeFilter(type:string){
+    console.log(type)
   }
 }
